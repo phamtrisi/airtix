@@ -1,0 +1,41 @@
+<h1>Welcome {{ m }}</h1>
+{{ summary }}
+<table class="table">
+  <thead>
+    <th>&nbsp;</th>
+    <th>Date</th>
+    <th>Vendor</th>
+    <th>Description</th>
+    <th>Amount</th>
+    <th>Acct</th>
+    <th>Category</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat="record in transactions | orderBy:['-amount', 'date']">
+      <td>
+        {{ $index + 1 }}
+      </td>
+      <td>
+        {{ record.date | date:'M/d/yy' }}
+      </td>
+      <td>
+        {{ record.vendor }}
+      </td>
+      <td>
+        <input type="text" ng-model="record.description">
+      </td>
+      <td>
+        {{ record.transactionType === 'debit'? '-':'' }}{{ record.amount }}
+      </td>
+      <td>
+        {{ record.accountName }}
+      </td>
+      <td>
+        {{ record.category }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div>
+  
+</div>
