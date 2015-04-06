@@ -1,0 +1,43 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      <table class="table">
+        <thead>
+          <th>&nbsp;</th>
+          <th>Date</th>
+          <th>Vendor</th>
+          <th>Amount</th>
+          <th>Acct</th>
+          <th>Category</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="record in transactions | orderBy:['-amount', 'date']">
+            <td>
+              {{ $index + 1 }}
+            </td>
+            <td>
+              {{ record.date | date:'M/d/yy' }} - {{ record.dayOfWeek }}
+            </td>
+            <td>
+              {{ record.vendor }}
+            </td>
+            <td>
+              {{ record.transactionType === 'debit'? '-':'' }}{{ record.amount }}
+            </td>
+            <td>
+              {{ record.accountName }}
+            </td>
+            <td>
+              {{ record.category }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div>
+  
+</div>
