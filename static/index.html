@@ -7,7 +7,20 @@
     <link rel="stylesheet" href="styles/app.css">  
   </head>
   <body ng-app="moneyApp">
-    <div ui-view></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="side-nav">
+            <li><a ui-sref="home">Home</a></li>
+            <li><a ui-sref="dashboard">Dashboard</a></li>
+            <li><a ui-sref="categories">Categories</a></li>
+            <li><a href="">Budgets</a></li>
+            <li><a href="">Magic</a></li>
+          </ul>
+        </div>
+        <div class="col-md-10 ui-view></div>
+      </div>
+    </div>
 
 
     <script src="libs/jquery/dist/jquery.min.js"></script>

@@ -1,0 +1,12 @@
+<div>
+  <ul class="unstyled categories">
+    <li ng-repeat="category in categories">
+      {{ category.name }}
+      <ul class="unstyled" ng-if="category.subCategories">
+        <li ng-repeat="subCategory in category.subCategories">
+          {{ subCategory.name }}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

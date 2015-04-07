@@ -1,0 +1,8 @@
+$font-stack:    'Lato', Helvetica, sans-serif;
+$primary-color: #333;
+$font-size: 16px;
+$font-weight: 300;
+
+@mixin transition($property, $time, $easing) {
+  transition: $property $time $easing;
+}

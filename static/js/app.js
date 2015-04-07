@@ -4,44 +4,66 @@
 
   app.config(function($stateProvider, $urlRouterProvider) {
     
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('/home');
     
     $stateProvider
       .state('home', {
-        url: '/',
+        url: '/home',
         templateUrl: 'partials/__home.html',
-        controller: 'MainCtrl',
+        controller: 'HomeCtrl',
         resolve: {
           transactions: function($http) {
             return $http({
               method: 'GET',
-              url: 'data/transactions.json'
+              url: '/api/transactions'
             });
           }
         }
       })
+      .state('categories', {
+        url: '/categories',
+        templateUrl: 'partials/__categories.html',
+        controller: 'CategoriesCtrl',
+        resolve: {
+          categories: function($http) {
+            return $http({
+              method: 'GET',
+              url: '/api/categories'
+            });
+          }
+        }
+      });
   });
 
 
 
-  app.controller('MainCtrl', ['$scope', 'transactions', MainCtrl]);
+  app.controller('HomeCtrl', ['$scope', 'transactions', HomeCtrl]);
+  app.controller('CategoriesCtrl', ['$scope', 'categories', CategoriesCtrl]);
 
 
-  function MainCtrl($scope, transactions) {
+  function CategoriesCtrl($scope, categories) {
+    $scope.categories = categories.data;
+  }
+
+  function HomeCtrl($scope, transactions) {
     var now = new Date(),
         thisMonth = now.getMonth(),
         thisYear = now.getFullYear();
 
-    $scope.transactions = _.filter(transactions.data, function(record) {
-      var thisDate = new Date(record.date);
-      return thisDate.getMonth() === thisMonth - 1 && thisDate.getFullYear() === thisYear;
-    });
+    $scope.transactions = transactions.data;
 
-    // Transform data
-    $scope.transactions = _.map($scope.transactions, function(record) {
-      record.dayOfWeek = new Date(record.date).getDay();
-      return record;
-    });
+    // $scope.transactions = _.filter(transactions.data, function(record) {
+    //   var thisDate = new Date(record.date);
+    //   return thisDate.getMonth() === thisMonth - 1 && thisDate.getFullYear() === thisYear;
+    // });
+
+    // // Transform data
+    // $scope.transactions = _.map($scope.transactions, function(record) {
+    //   record.dayOfWeek = new Date(record.date).getDay();
+    //   return record;
+    // });
+
+    console.log($scope.transactions);
 
     $scope.summary = {
       sum: _.sum($scope.transactions, 'amount')

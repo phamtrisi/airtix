@@ -4,11 +4,32 @@ var app            = express();
 var bodyParser     = require('body-parser');
 var methodOverride = require('method-override');
 var Sequelize = require('sequelize');
+var restful   = require('sequelize-restful');
+var epilogue = require('epilogue');
+
 
 // config files
 var db = require('./config/db');
 var models = require('./app/models/models');   
 
+//app.use(restful(models.sequelize, { /* options */ }));
+epilogue.initialize({
+  app: app,
+  sequelize: models.sequelize,
+  base: '/api',
+  updateMethod: 'POST'
+});
+
+var transactionResource = epilogue.resource({
+      model: models.Transaction,
+      endpoints: ['/transactions', '/transactions/:id'],
+      pagination: false
+    }),
+    categoriesResource = epilogue.resource({
+      model: models.Category,
+      endpoints: ['/categoriess', '/categoriess/:id'],
+      pagination: false
+    });
 
 // set our port
 var port = process.env.PORT || 8000; 

@@ -1,0 +1,15 @@
+@import 'lib';
+@import 'commons';
+
+html, body {
+  height: 100%;
+  max-height: 100%;
+  font-family: $font-stack;
+  font-size: $font-size;
+  font-weight: $font-weight;
+  color: $primary-color;
+}
+
+
+@import 'side_nav';
+@import 'categories_list';

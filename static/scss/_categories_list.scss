@@ -1,0 +1,13 @@
+.categories {
+  & > li {
+    & > ul {
+      & > li {
+        margin-left: 15px;
+      }
+    }  
+  }
+
+  & li > a {
+    padding: 5px 20px;
+  }  
+}
