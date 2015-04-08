@@ -1,0 +1,33 @@
+<form class="add-account-form"
+      name="addAccountForm"
+      enctype="application/x-www-form-urlencoded" 
+      ng-submit="addAccountForm.$valid && addAccount(newAccount)">
+  {{ newAccount }}
+  <h3>Add account</h3>
+  <div class="form-group">
+    <label class="control-label">Bank</label>
+    <select ng-options="bank.type as bank.name for bank in institutions | orderBy:'name'"
+            ng-model="newAccount.institutionType"
+            required
+            class="form-control">
+      <option value="">-- Bank --</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Username</label>
+    <input class="form-control"
+           type="text" 
+           ng-model="newAccount.username" 
+           required>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Password</label>
+    <input class="form-control"
+           type="password" 
+           ng-model="newAccount.password" 
+           required>
+  </div>
+
+  <button class="btn"
+          type="submit">Connect account</button>  
+</form>

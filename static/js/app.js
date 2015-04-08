@@ -1,6 +1,12 @@
 (function(angular, _) {
 
-  var app = angular.module('moneyApp', ['ui.router', 'angularMoment', 'moneyAppServices']);
+  var app = angular.module('moneyApp', [
+        'ui.router', 
+        'angularMoment', 
+        'moneyAppServices',
+        'addAccountComp',
+        'accountServices'
+      ]);
 
   app.config(function($stateProvider, $urlRouterProvider) {
     
@@ -53,12 +59,6 @@
   }
 
   function HomeCtrl($scope, moneyAppPlaid) {
-    moneyAppPlaid.getInstitutions().then(function success(res) {
-      $scope.institutions = res.data;
-      console.log($scope.institutions);
-    }, function error(err) {
-      console.log(err);
-    });
   }
 
   function DashboardCtrl($scope, transactions) {
