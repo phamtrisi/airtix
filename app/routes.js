@@ -15,8 +15,14 @@ module.exports = function(app) {
   });
 
 
+  // Endpoints to interact with Plaid
+  // Add bank account using credentials and institution type
+  // Validate MFA if required
+  // Get transactions
+
+
   // THE REST
-  app.get('*', function(req, res) {
-    res.render('../static/index.html'); // load our public/index.html file
+  app.get('/', function(req, res) {
+    res.sendfile('./static/templates/index.html'); // load our public/index.html file
   });
 };

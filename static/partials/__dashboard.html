@@ -1,0 +1,32 @@
+<table class="table">
+  <thead>
+    <th>&nbsp;</th>
+    <th>Date</th>
+    <th>Vendor</th>
+    <th>Amount</th>
+    <th>Acct</th>
+    <th>Category</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat="record in transactions | orderBy:['-dateTime','-amount']">
+      <td>
+        {{ $index + 1 }}
+      </td>
+      <td>
+        {{ record.dateTime | date:'M/d/yy' }} - {{ record.dayOfWeek }}
+      </td>
+      <td>
+        {{ record.description }}
+      </td>
+      <td>
+        {{ record.amount }}
+      </td>
+      <td>
+        {{ record.accountId }}
+      </td>
+      <td>
+        {{ record.categoryId }}
+      </td>
+    </tr>
+  </tbody>
+</table>

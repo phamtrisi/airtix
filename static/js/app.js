@@ -1,6 +1,6 @@
 (function(angular, _) {
 
-  var app = angular.module('moneyApp', ['ui.router', 'angularMoment']);
+  var app = angular.module('moneyApp', ['ui.router', 'angularMoment', 'moneyAppServices']);
 
   app.config(function($stateProvider, $urlRouterProvider) {
     
@@ -11,6 +11,12 @@
         url: '/home',
         templateUrl: 'partials/__home.html',
         controller: 'HomeCtrl',
+        resolve: {}
+      })
+      .state('dashboard', {
+        url: '/dashboard',
+        templateUrl: 'partials/__dashboard.html',
+        controller: 'DashboardCtrl',
         resolve: {
           transactions: function($http) {
             return $http({
@@ -37,7 +43,8 @@
 
 
 
-  app.controller('HomeCtrl', ['$scope', 'transactions', HomeCtrl]);
+  app.controller('HomeCtrl', ['$scope', 'moneyAppPlaid', HomeCtrl]);
+  app.controller('DashboardCtrl', ['$scope', 'transactions', DashboardCtrl]);
   app.controller('CategoriesCtrl', ['$scope', 'categories', CategoriesCtrl]);
 
 
@@ -45,7 +52,16 @@
     $scope.categories = categories.data;
   }
 
-  function HomeCtrl($scope, transactions) {
+  function HomeCtrl($scope, moneyAppPlaid) {
+    moneyAppPlaid.getInstitutions().then(function success(res) {
+      $scope.institutions = res.data;
+      console.log($scope.institutions);
+    }, function error(err) {
+      console.log(err);
+    });
+  }
+
+  function DashboardCtrl($scope, transactions) {
     var now = new Date(),
         thisMonth = now.getMonth(),
         thisYear = now.getFullYear();

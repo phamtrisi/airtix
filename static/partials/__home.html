@@ -1,32 +1,28 @@
-<table class="table">
-  <thead>
-    <th>&nbsp;</th>
-    <th>Date</th>
-    <th>Vendor</th>
-    <th>Amount</th>
-    <th>Acct</th>
-    <th>Category</th>
-  </thead>
-  <tbody>
-    <tr ng-repeat="record in transactions | orderBy:['-dateTime','-amount']">
-      <td>
-        {{ $index + 1 }}
-      </td>
-      <td>
-        {{ record.dateTime | date:'M/d/yy' }} - {{ record.dayOfWeek }}
-      </td>
-      <td>
-        {{ record.description }}
-      </td>
-      <td>
-        {{ record.amount }}
-      </td>
-      <td>
-        {{ record.accountId }}
-      </td>
-      <td>
-        {{ record.categoryId }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+<h1>Welcome home, master</h1>
+<form id="add-account-form" class="form-horizontal">
+  <h3>Add account</h3>
+  <div class="form-group">
+    <label class="control-label">Bank</label>
+    <select ng-options="bank.type as bank.name for bank in institutions | orderBy:'name'"
+            ng-model="newAccount.institutionType"
+            required
+            class="form-control">
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Username</label>
+    <input class="form-control"
+           type="text" 
+           ng-model="newAccount.username" 
+           required>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Password</label>
+    <input class="form-control"
+           type="password" 
+           ng-model="newAccount.password" 
+           required>
+  </div>
+
+  <button class="btn">Connect account</button>  
+</form>
