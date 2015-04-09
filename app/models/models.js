@@ -2,6 +2,7 @@ var Sequelize = require('sequelize');
 var db = require('../../config/db');
 
 var sequelize = new Sequelize(db.connectionString);
+var FORCE_CREATE_TABLE = false;
 
 // CATEGORY
 var Category = sequelize.define('category', {
@@ -16,7 +17,7 @@ Category
   .hasMany(Category, {
     as: 'subCategories'
   });
-Category.sync({force: false});
+Category.sync({force: FORCE_CREATE_TABLE});
 
 
 
@@ -24,14 +25,29 @@ Category.sync({force: false});
 
 // ACCOUNTS
 var Account = sequelize.define('account', {
+      externalId: {
+        type: Sequelize.STRING
+      },
       name: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
+      },
+      accountNumber: {
+        type: Sequelize.STRING
+      },
+      limit: {
+        type: Sequelize.FLOAT
+      },
+      available: {
+        type: Sequelize.FLOAT
+      },
+      currentBalance: {
+        type: Sequelize.FLOAT
       }
     }, {
       freezeTableName: true
     });
 
-Account.sync({force: false});
+Account.sync({force: FORCE_CREATE_TABLE});
 
 
 
@@ -46,7 +62,24 @@ var Vendor = sequelize.define('vendor', {
       freezeTableName: true
     });
 
-Vendor.sync({force: false});
+Vendor.sync({force: FORCE_CREATE_TABLE});
+
+
+
+
+// INSTITUTION ACCOUNTS
+var InstitutionAccount = sequelize.define('institutionAccount', {
+      institution: {
+        type: Sequelize.STRING
+      },
+      accessToken: {
+        type: Sequelize.STRING
+      }
+    }, {
+      freezeTableName: true
+    });
+
+InstitutionAccount.sync({force: FORCE_CREATE_TABLE});
 
 
 
@@ -75,7 +108,7 @@ var Transaction = sequelize.define('transaction', {
 Transaction.belongsTo(Account);
 Transaction.belongsTo(Category);
 Transaction.belongsTo(Vendor);
-Transaction.sync({force: false});
+Transaction.sync({force: FORCE_CREATE_TABLE});
 
 
 
@@ -83,5 +116,8 @@ Transaction.sync({force: false});
 module.exports = {
   sequelize: sequelize,
   Category: Category,
-  Transaction: Transaction
+  Transaction: Transaction,
+  Account: Account,
+  Vendor: Vendor,
+  InstitutionAccount: InstitutionAccount
 };

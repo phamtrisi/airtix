@@ -31,25 +31,53 @@ module.exports = function(app) {
   app.post('/api/account/add', function(req, res) {
     var data = req.body;
 
-    /**
-     * Connect/Add a user.
-     */
+    function processAccountsData(response) {
+      var newAccounts = response.accounts;
+
+      // Add this InstitutionAccount if not exist
+      models.InstitutionAccount.findOrCreate({
+        where: {
+          accessToken: response.access_token
+        },
+        defaults: {
+          institution: data.institutionType
+        }
+      });
+
+      // Add all bank accounts associated with this InstitutionAccount if not existing
+      newAccounts.forEach(function(account) {
+        models.Account.findOrCreate({
+          where: {
+            accountNumber: account.meta.number
+          },
+          defaults: {
+            name: account.meta.name,
+            limit: parseFloat(account.meta.limit) || null,
+            available: parseFloat(account.balance.available) || null,
+            currentBalance: parseFloat(account.balance.current) || null,
+          } 
+        });
+      });
+    }
+    
     if (data) {
       plaid.connect({
         username: data.username,
         password: data.password
       }, data.institutionType, '', function(error, response, mfa) {
 
-        //Non MFA or already added
-        console.log(response, error)
-
         //MFA
         if (mfa) {
           var answer_question = "abdjfasdf";
-          plaid.step(response.access_token, answer_question, function(err, response) {
-            //response is accounts and transactions object
-            console.log(response, err);
+          plaid.step(response.access_token, answer_question, function(error, response) {
+            processAccountsData(response);
           })
+        }
+        else if (response && !error) {
+          processAccountsData(response);
+        }
+        else if (error) {
+
         }
       });
     }
