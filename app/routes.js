@@ -33,62 +33,67 @@ module.exports = function(app) {
 
     function processAccountsData(response) {
       var newAccounts = response.accounts;
-
+      console.log("processing account");
       // Add this InstitutionAccount if not exist
-      models.InstitutionAccount.findOrCreate({
-        where: {
-          accessToken: response.access_token
-        },
-        defaults: {
-          institution: data.institutionType
-        }
-      });
-
-      // Add all bank accounts associated with this InstitutionAccount if not existing
-      newAccounts.forEach(function(account) {
-        models.Account.findOrCreate({
-          where: {
-            accountNumber: account.meta.number
-          },
-          defaults: {
-            name: account.meta.name,
-            limit: parseFloat(account.meta.limit) || null,
-            available: parseFloat(account.balance.available) || null,
-            currentBalance: parseFloat(account.balance.current) || null,
-          } 
+      models.InstitutionAccount.create({
+        username: data.username,
+        institution: data.institutionType,
+        accessToken: response.access_token
+      }).then(function() {
+        // Add all bank accounts associated with this InstitutionAccount if not existing
+        newAccounts.forEach(function(account) {
+          models.Account.findOrCreate({
+            where: {
+              accountNumber: account.meta.number
+            },
+            defaults: {
+              name: account.meta.name,
+              limit: parseFloat(account.meta.limit) || null,
+              available: parseFloat(account.balance.available) || null,
+              currentBalance: parseFloat(account.balance.current) || null,
+            } 
+          });
         });
       });
     }
     
     if (data) {
-      plaid.connect({
-        username: data.username,
-        password: data.password
-      }, data.institutionType, '', function(error, response, mfa) {
+      // See if this account has already been added by checking username and institutionType
+      models.InstitutionAccount.find({
+        where: {
+          username: data.username,
+          institution: data.institutionType
+        }
+      }).then(function(existingInstitutionAccount) {
+        if (existingInstitutionAccount) {
+          return;
+        }
+        else {
+          console.log('connecting to plaid');
+          // Connect to Plaid
+          plaid.connect({
+            username: data.username,
+            password: data.password
+          }, data.institutionType, '', function(error, response, mfa) {
 
-        //MFA
-        if (mfa) {
-          var answer_question = "abdjfasdf";
-          plaid.step(response.access_token, answer_question, function(error, response) {
-            processAccountsData(response);
-          })
-        }
-        else if (response && !error) {
-          processAccountsData(response);
-        }
-        else if (error) {
+            //MFA
+            if (mfa) {
+              res.json(response);
+              // var answer_question = "abdjfasdf";
+              // plaid.step(response.access_token, answer_question, function(error, response) {
+              //   processAccountsData(response);
+              // })
+            }
+            else if (response && !error) {
+              processAccountsData(response);
+            }
+            else if (error) {
 
+            }
+          });
         }
-      });
+      });      
     }
-
-    /**
-     * Get a user's transactions, using the access_token
-     */
-    // plaid.get(access_token, function(err, res) {
-    //   console.log('Accounts : ', res.accounts);
-    //   console.log('Transactions : ', res.transactions);
-    // });
   });
 
   // THE REST

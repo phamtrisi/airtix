@@ -1,23 +1,14 @@
-var sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('category', {
+    name: {
+      type: DataTypes.STRING,
+    }
+  }, {
+    freezeTableName: false,
+    tableName: 'categories'
+  });
 
-var Category = sequelize.define('category', {
-      name: {
-        type: Sequelize.STRING,
-      },
-    }, {
-      freezeTableName: true // Model tableName will be the same as the model name
-    });
-
-module.exports = {
-  category: Category
-};
-
-
-
-// User.sync({force: true}).then(function () {
-//   // Table created
-//   return User.create({
-//     firstName: 'John',
-//     lastName: 'Hancock'
-//   });
-// });
+  Category.hasMany(Category, {
+    as: 'subCategories'
+  });
+}

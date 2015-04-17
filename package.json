@@ -3,6 +3,7 @@
   "main": "server.js",
   "dependencies": {
     "body-parser": "~1.4.2",
+    "cron": "^1.0.9",
     "epilogue": "^0.5.0",
     "express": "~4.5.1",
     "method-override": "~2.0.2",

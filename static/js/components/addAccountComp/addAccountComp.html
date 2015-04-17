@@ -2,7 +2,6 @@
       name="addAccountForm"
       enctype="application/x-www-form-urlencoded" 
       ng-submit="addAccountForm.$valid && addAccount(newAccount)">
-  {{ newAccount }}
   <h3>Add account</h3>
   <div class="form-group">
     <label class="control-label">Bank</label>
@@ -28,6 +27,6 @@
            required>
   </div>
 
-  <button class="btn"
+  <button class="btn btn-success"
           type="submit">Connect account</button>  
 </form>
