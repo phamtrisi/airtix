@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 var db = require('../../config/db');
 
-var sequelize = new Sequelize(db.connectionString);
+var sequelize = new Sequelize(db.prod.connectionString);
 var FORCE_CREATE_TABLE = false;
 
 // CATEGORY
