@@ -4,8 +4,8 @@
         'ui.router', 
         'angularMoment', 
         'moneyAppServices',
-        'addAccountComp',
-        'accountServices'
+        'addItemComp',
+        'itemServices'
       ]);
 
   app.config(function($stateProvider, $urlRouterProvider) {
@@ -17,7 +17,13 @@
         url: '/home',
         templateUrl: 'partials/__home.html',
         controller: 'HomeCtrl',
-        resolve: {}
+        resolve: {
+          items: function($http) {
+            return $http({
+              url: '/api/items'
+            });
+          }
+        }
       })
       .state('dashboard', {
         url: '/dashboard',
@@ -49,7 +55,7 @@
 
 
 
-  app.controller('HomeCtrl', ['$scope', 'moneyAppPlaid', HomeCtrl]);
+  app.controller('HomeCtrl', ['$scope', 'items', HomeCtrl]);
   app.controller('DashboardCtrl', ['$scope', 'transactions', DashboardCtrl]);
   app.controller('CategoriesCtrl', ['$scope', 'categories', CategoriesCtrl]);
 
@@ -58,7 +64,8 @@
     $scope.categories = categories.data;
   }
 
-  function HomeCtrl($scope, moneyAppPlaid) {
+  function HomeCtrl($scope, items) {
+    $scope.items = items.data;
   }
 
   function DashboardCtrl($scope, transactions) {

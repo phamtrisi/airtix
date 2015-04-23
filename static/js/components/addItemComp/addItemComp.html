@@ -1,0 +1,15 @@
+<form class="add-item-form"
+      name="addItemForm"
+      enctype="application/x-www-form-urlencoded" 
+      ng-submit="addItemForm.$valid && addItem(newItem)">
+  <div class="form-group">
+    <input class="form-control"
+           type="text" 
+           ng-model="newItem.url" 
+           required
+           placeholder="Amazon URL">
+  </div>
+
+  <button class="btn btn-success"
+          type="submit">Add</button>  
+</form>

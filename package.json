@@ -1,15 +1,17 @@
 {
-  "name": "moneyApp",
+  "name": "airtix",
   "main": "server.js",
   "dependencies": {
     "body-parser": "~1.4.2",
+    "cheerio": "^0.19.0",
     "cron": "^1.0.9",
+    "curlrequest": "^0.5.2",
     "epilogue": "^0.5.0",
     "express": "~4.5.1",
+    "follow-redirects": "0.0.3",
     "method-override": "~2.0.2",
-    "mongoose": "~3.8.0",
     "mysql": "^2.6.1",
-    "plaid": "^0.1.1",
+    "request": "^2.55.0",
     "sequelize": "^2.0.5",
     "sequelize-restful": "^0.4.1"
   },
