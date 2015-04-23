@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-  var SavedWatch =  sequelize.define('SavedWatch', {
+  var PriceWatch =  sequelize.define('PriceWatch', {
     from_airport: {
       type: DataTypes.STRING,
       allowNull: false
@@ -14,9 +14,9 @@ module.exports = function(sequelize, DataTypes) {
     name: DataTypes.STRING
   }, {
     freezeTableName: false,
-    tableName: 'saved_watches',
+    tableName: 'price_watches',
     underscored: true
   });
 
-  return SavedWatch;
+  return PriceWatch;
 }

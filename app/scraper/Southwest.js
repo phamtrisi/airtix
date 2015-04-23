@@ -1,9 +1,16 @@
 var request = require('request'),
     cheerio = require('cheerio'),
-    curl = require('curlrequest');
+    curl = require('curlrequest'),
+    creds = require('../../config/creds'),
+    Pushover = require('node-pushover'),
+    push = new Pushover({
+      token: creds.pushover.token,
+      user: creds.pushover.user_key
+    });
 
 var Southwest = (function() {
   function _getPrices(fromAirport, toAirport, travelDate, options) {
+    console.log(fromAirport, toAirport, travelDate);
     if (!(fromAirport && toAirport && travelDate)) {
       return;
     }
@@ -43,6 +50,7 @@ var Southwest = (function() {
       form: formData
     }, function(error, response, html) {
       if (!error && response.statusCode == 200) {
+        console.log('Scraped');
         var $ = cheerio.load(html),
             $priceRows = $('[id*=outbound_flightRow]'),
             flights = [];
@@ -68,7 +76,8 @@ var Southwest = (function() {
               anytimePrice = 0,
               anytimeRewards = 0,
               getAwayPrice = 0,
-              getAwayRewards = 0;
+              getAwayRewards = 0,
+              pushMessage = '';
 
           // TODO HIGH: take care of timezone
           // Process depart and arrive time cells
@@ -97,6 +106,9 @@ var Southwest = (function() {
           // console.log(departTime, arriveTime, travelTime, businessPrice, anytimePrice, getAwayPrice);
 
           flight = {
+            from: fromAirport,
+            to: toAirport,
+            date: travelDate,
             depart: departTime,
             arrive: arriveTime,
             duration: travelTime,
@@ -109,6 +121,16 @@ var Southwest = (function() {
           };
 
           console.log(flight);
+
+          // Compose push message
+          pushTitle = flight.from + '-' + flight.to + ' (' + flight.date + ')';
+          pushMessage = ['Flight: ' + flight.depart + '-' + flight.arrive,
+                         'Duration: ' + flight.duration,
+                         'Business: ' + flight.businessPrice,
+                         'Anytime: ' + flight.anytimePrice,
+                         'Getaway: ' + flight.getAwayPrice].join('\n');
+
+          push.send(pushTitle, pushMessage);
 
           // add this flight to returned list
           flights.push(flight);

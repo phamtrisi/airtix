@@ -6,11 +6,11 @@ var sequelize = new Sequelize(db.dev.connectionString);
 var FORCE_CREATE_TABLE = false;
 
 // Import models
-var SavedWatch = sequelize.import(__dirname + '/SavedWatchModel.js'),
+var PriceWatch = sequelize.import(__dirname + '/PriceWatchModel.js'),
     PriceLog = sequelize.import(__dirname + '/PriceLogModel.js');
 
 // Set up relationships
-PriceLog.belongsTo(SavedWatch);
+PriceLog.belongsTo(PriceWatch);
 
 // Sync models
 sequelize.sync({
@@ -21,6 +21,6 @@ sequelize.sync({
 // Exports
 module.exports = {
   sequelize: sequelize,
-  SavedWatch: SavedWatch,
+  PriceWatch: PriceWatch,
   PriceLog: PriceLog
 };
