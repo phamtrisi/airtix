@@ -1,7 +1,9 @@
 var request = require('request'),
+    models = require('../models/models'),
     cheerio = require('cheerio'),
     curl = require('curlrequest'),
     creds = require('../../config/creds'),
+    _ = require('lodash'),
     Pushover = require('node-pushover'),
     push = new Pushover({
       token: creds.pushover.token,
@@ -9,6 +11,60 @@ var request = require('request'),
     });
 
 var Southwest = (function() {
+  var prices;
+  
+  /**
+   * Flight class
+   */
+  var Flight = function Flight(from, to, date, attrs) {
+    // Public vars
+    this.from = from;
+    this.to = to;
+    this.date = date;
+
+    if (attrs && _.isObject(attrs)) {
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          this[attr] = attrs[attr];
+        }
+      }
+    }
+
+    // Private vars/methods
+    
+    // Given price in string, remove any characters that's not a digit
+    function _cleanUpPrice(price) {
+      return price && parseFloat(price.replace(/\D/g,''));
+    }
+
+    function _convertDuration(duration) {
+      if (!duration) return duration;
+
+      var matches = /(?:(\d*)(?:h|hr))*\s*(?:(\d*)m)*/gi.exec(duration);
+      if (!matches[0]) return;
+
+      return parseInt((matches[1] || 0)) * 60 + parseInt((matches[2] || 0));
+    }
+
+    // Remove the currency sign in front of the prices
+    this.cleanUpPrices = function() {
+      var that = this,
+          pricesStrings = ['businessPrice', 'businessRewards', 'anytimePrice', 'anytimeRewards', 'getAwayPrice', 'getAwayRewards'];
+      
+      pricesStrings.forEach(function(priceString) {
+        that[priceString] = _cleanUpPrice(that[priceString]);    
+      });   
+    };
+
+    // Convert duration string into minutes
+    this.convertDurationToMinutes = function() {
+      this.duration = _convertDuration(this.duration);
+    };
+
+    return this;
+  };
+
+  // Get all flights for given params
   function _getPrices(fromAirport, toAirport, travelDate, options) {
     console.log(fromAirport, toAirport, travelDate);
     if (!(fromAirport && toAirport && travelDate)) {
@@ -105,40 +161,43 @@ var Southwest = (function() {
 
           // console.log(departTime, arriveTime, travelTime, businessPrice, anytimePrice, getAwayPrice);
 
-          flight = {
-            from: fromAirport,
-            to: toAirport,
-            date: travelDate,
+          flight = new Flight(fromAirport, toAirport, travelDate, {
             depart: departTime,
             arrive: arriveTime,
             duration: travelTime,
-            businessPrice: businessPrice,
-            anytimePrice: anytimePrice,
-            getAwayPrice: getAwayPrice,
-            businessRewards: businessRewards,
-            anytimeRewards: anytimeRewards,
-            getAwayRewards: getAwayRewards
-          };
+            businessPrice: businessPrice || null,
+            anytimePrice: anytimePrice || null,
+            getAwayPrice: getAwayPrice || null,
+            businessRewards: businessRewards || null,
+            anytimeRewards: anytimeRewards || null,
+            getAwayRewards: getAwayRewards || null
+          });
 
-          console.log(flight);
+          flight.cleanUpPrices();
+          flight.convertDurationToMinutes();
+          // console.log(flight);
 
-          // Compose push message
-          pushTitle = flight.from + '-' + flight.to + ' (' + flight.date + ')';
-          pushMessage = ['Flight: ' + flight.depart + '-' + flight.arrive,
-                         'Duration: ' + flight.duration,
-                         'Business: ' + flight.businessPrice,
-                         'Anytime: ' + flight.anytimePrice,
-                         'Getaway: ' + flight.getAwayPrice].join('\n');
+          // // Compose push message
+          // pushTitle = flight.from + '-' + flight.to + ' (' + flight.date + ')';
+          // pushMessage = ['Flight: ' + flight.depart + '-' + flight.arrive,
+          //                'Duration: ' + flight.duration,
+          //                'Business: ' + flight.businessPrice,
+          //                'Anytime: ' + flight.anytimePrice,
+          //                'Getaway: ' + flight.getAwayPrice].join('\n');
 
-          push.send(pushTitle, pushMessage);
+          // push.send(pushTitle, pushMessage);
 
           // add this flight to returned list
           flights.push(flight);
         });
 
+
+        // Do cool calculations with flights
+        _logPrices(_doCalculations(flights), options.priceWatchId);
       }
       else {
         console.log(error);
+        return;
       }
     });
 
@@ -146,9 +205,41 @@ var Southwest = (function() {
   }
 
 
+  // Log prices to db
+  function _logPrices(prices, priceWatchId) {
+    models.PriceLog.create({
+      lowest_business_price: prices.lowestBusinessPrice,
+      lowest_anytime_price: prices.lowestAnytimePrice,
+      lowest_get_away_price: prices.lowestGetAwayPrice,
+      price_watch_id: priceWatchId
+    });
+  }
+
+
+  // Magic function
+  function _doCalculations(flights) {
+    var comparePriceFunc = function(flight) {
+          return flight;
+        },
+        stats = {
+          lowestBusinessPrice: _.min(flights, function(flight) {
+            return flight.businessPrice? flight.businessPrice: Infinity;
+          }).businessPrice,
+          lowestAnytimePrice: _.min(flights, function(flight) {
+            return flight.anytimePrice? flight.anytimePrice: Infinity;
+          }).anytimePrice,
+          lowestGetAwayPrice: _.min(flights, function(flight) {
+            return flight.getAwayPrice? flight.getAwayPrice: Infinity;
+          }).getAwayPrice,
+        };
+
+    console.log(stats);
+    return stats;
+  }
 
   return {
-    getPrices: _getPrices    
+    getPrices: _getPrices,
+    prices: prices    
   };
 })();
 

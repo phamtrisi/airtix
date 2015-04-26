@@ -1,6 +1,12 @@
 module.exports = function(sequelize, DataTypes) {
   var PriceLog =  sequelize.define('PriceLog', {
-    price: {
+    lowest_business_price: {
+      type: DataTypes.FLOAT
+    },
+    lowest_anytime_price: {
+      type: DataTypes.FLOAT
+    },
+    lowest_get_away_price: {
       type: DataTypes.FLOAT
     }
   }, {

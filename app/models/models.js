@@ -7,7 +7,8 @@ var FORCE_CREATE_TABLE = false;
 
 // Import models
 var PriceWatch = sequelize.import(__dirname + '/PriceWatchModel.js'),
-    PriceLog = sequelize.import(__dirname + '/PriceLogModel.js');
+    PriceLog = sequelize.import(__dirname + '/PriceLogModel.js'),
+    Airport = sequelize.import(__dirname + '/AirportModel.js');
 
 // Set up relationships
 PriceLog.belongsTo(PriceWatch);
@@ -22,5 +23,6 @@ sequelize.sync({
 module.exports = {
   sequelize: sequelize,
   PriceWatch: PriceWatch,
-  PriceLog: PriceLog
+  PriceLog: PriceLog,
+  Airport: Airport
 };
