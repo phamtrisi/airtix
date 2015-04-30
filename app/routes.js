@@ -1,18 +1,22 @@
 var epilogue = require('epilogue'),
-    models = require('./models/models.js');
+    models = require('./models/models'),
+    api = require('./api');
 
 module.exports = function(app) {
-  epilogue.initialize({
-    app: app,
-    sequelize: models.sequelize,
-    base: '/api'
-  });
+  // API STUFF
+  // epilogue.initialize({
+  //   app: app,
+  //   sequelize: models.sequelize,
+  //   base: '/api'
+  // });
 
-  var itemsApi = epilogue.resource({
-    model: models.Item,
-    endpoints: ['/items', '/items/:id']
-  });
+  // var priceWatchesApi = epilogue.resource({
+  //   model: models.PriceWatch,
+  //   endpoints: ['/price_watches', '/price_watches/:id']
+  // });
 
+  // app.get('/api/price_watches')
+  app.use('/api', api);
 
   // THE REST
   app.get('*', function(req, res) {

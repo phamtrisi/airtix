@@ -1,11 +1,8 @@
 (function(angular, _) {
 
-  var app = angular.module('moneyApp', [
+  var app = angular.module('airtix', [
         'ui.router', 
-        'angularMoment', 
-        'moneyAppServices',
-        'addItemComp',
-        'itemServices'
+        'angularMoment'
       ]);
 
   app.config(function($stateProvider, $urlRouterProvider) {
@@ -18,35 +15,9 @@
         templateUrl: 'partials/__home.html',
         controller: 'HomeCtrl',
         resolve: {
-          items: function($http) {
+          priceWatches: function($http) {
             return $http({
-              url: '/api/items'
-            });
-          }
-        }
-      })
-      .state('dashboard', {
-        url: '/dashboard',
-        templateUrl: 'partials/__dashboard.html',
-        controller: 'DashboardCtrl',
-        resolve: {
-          transactions: function($http) {
-            return $http({
-              method: 'GET',
-              url: '/api/transactions'
-            });
-          }
-        }
-      })
-      .state('categories', {
-        url: '/categories',
-        templateUrl: 'partials/__categories.html',
-        controller: 'CategoriesCtrl',
-        resolve: {
-          categories: function($http) {
-            return $http({
-              method: 'GET',
-              url: '/api/categories'
+              url: '/api/price_watches'
             });
           }
         }
@@ -55,42 +26,45 @@
 
 
 
-  app.controller('HomeCtrl', ['$scope', 'items', HomeCtrl]);
-  app.controller('DashboardCtrl', ['$scope', 'transactions', DashboardCtrl]);
-  app.controller('CategoriesCtrl', ['$scope', 'categories', CategoriesCtrl]);
+  app.controller('HomeCtrl', ['$scope', 'priceWatches', HomeCtrl]);
 
 
-  function CategoriesCtrl($scope, categories) {
-    $scope.categories = categories.data;
-  }
+  function HomeCtrl($scope, priceWatches) {
+    $scope.priceWatches = _.map(priceWatches.data, function(priceWatch) {
+      var priceLogs = _.filter(priceWatch.PriceLogs, function(priceLog) {
+        if (!priceLog.lowest_business_price || 
+            !priceLog.lowest_anytime_price || 
+            !priceLog.lowest_get_away_price) {
+          return false;
+        }
 
-  function HomeCtrl($scope, items) {
-    $scope.items = items.data;
-  }
+        return true;
+      });
+      if (priceLogs.length) {
+        priceWatch.lastPriceLog = priceLogs[priceLogs.length - 1];
+        // Get the min and max of each price type
+        priceWatch = _.assign({}, priceWatch, {
+          businessPrices: {
+            min: _.min(priceLogs, 'lowest_business_price').lowest_business_price,
+            max: _.max(priceLogs, 'lowest_business_price').lowest_business_price,
+            avg: _.sum(priceLogs, 'lowest_business_price')/priceLogs.length
+          },
+          anytimePrices: {
+            min: _.min(priceLogs, 'lowest_anytime_price').lowest_anytime_price,
+            max: _.max(priceLogs, 'lowest_anytime_price').lowest_anytime_price,
+            avg: _.sum(priceLogs, 'lowest_anytime_price')/priceLogs.length
+          },
+          getAwayPrices: {
+            min: _.min(priceLogs, 'lowest_get_away_price').lowest_get_away_price,
+            max: _.max(priceLogs, 'lowest_get_away_price').lowest_get_away_price,
+            avg: _.sum(priceLogs, 'lowest_get_away_price')/priceLogs.length
+          }
+        });
+      }
+      return priceWatch;
+    });
 
-  function DashboardCtrl($scope, transactions) {
-    var now = new Date(),
-        thisMonth = now.getMonth(),
-        thisYear = now.getFullYear();
-
-    $scope.transactions = transactions.data;
-
-    // $scope.transactions = _.filter(transactions.data, function(record) {
-    //   var thisDate = new Date(record.date);
-    //   return thisDate.getMonth() === thisMonth - 1 && thisDate.getFullYear() === thisYear;
-    // });
-
-    // // Transform data
-    // $scope.transactions = _.map($scope.transactions, function(record) {
-    //   record.dayOfWeek = new Date(record.date).getDay();
-    //   return record;
-    // });
-
-    console.log($scope.transactions);
-
-    $scope.summary = {
-      sum: _.sum($scope.transactions, 'amount')
-    };
+    console.log($scope.priceWatches);
   }
 
 })(angular, _);

@@ -5,10 +5,10 @@ var express = require('express'),
     methodOverride = require('method-override'),
     Sequelize = require('sequelize'),
     epilogue = require('epilogue'),
-    http = require('follow-redirects').http,
-    https = require('follow-redirects').https,
-    cheerio = require('cheerio'),
-    request = require('request');
+    CronJob = require('cron').CronJob,
+    models = require('./app/models/models'),
+    SouthwestScraper = require('./app/scraper/Southwest');
+
 
 // set our port
 var port = process.env.PORT || 8000;
@@ -41,6 +41,33 @@ app.listen(port);
 
 // shoutout to the user                     
 console.log('App running on port ' + port);
+
+// Get transactions every 2 hours
+var updatePrices = new CronJob({
+      cronTime: '0 */10 * * * *',
+      onTick: function() {
+        console.log('Getting price updates');
+        
+        function _toDateString(d) {
+            return [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/');
+        }
+
+        models.PriceWatch.all().then(function(priceWatches) {
+            priceWatches.forEach(function(priceWatch) {
+                SouthwestScraper.getPrices(priceWatch.from_airport, priceWatch.to_airport, _toDateString(priceWatch.date), {
+              priceWatchId: priceWatch.id
+            });
+            });
+        });
+        
+      },
+      start: false,
+      timeZone: 'America/Los_Angeles'
+    });
+
+updatePrices.start();
+console.log('Cron jobs started');
+
 
 // expose app           
 exports = module.exports = app;

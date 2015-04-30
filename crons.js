@@ -4,7 +4,7 @@ var CronJob = require('cron').CronJob,
 
 // Get transactions every 2 hours
 var updatePrices = new CronJob({
-      cronTime: '0 */15 * * * *',
+      cronTime: '0 */10 * * * *',
       onTick: function() {
         console.log('Getting price updates');
         

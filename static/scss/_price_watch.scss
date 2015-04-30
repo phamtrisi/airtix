@@ -1,0 +1,33 @@
+@import 'lib';
+
+.price-watch {
+  @extend %container;
+  padding: 15px;
+  margin: 15px 0;
+
+  .price-block {
+  	&__price {
+  		font-size: 1.8rem;
+  		font-weight: 300;
+  	}
+
+  	&__price-range {
+  		color: #777;
+  	}
+  }
+
+  &__header {
+	}
+
+	&__flight {
+		font-weight: 300;
+		font-size: 1.5rem;
+	}
+
+	&__date {
+		font-weight: 400;
+		font-size: 0.9rem;
+		word-spacing: 0.1rem;
+		color: #aaa;
+	}
+}

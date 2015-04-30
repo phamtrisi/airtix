@@ -1,0 +1,22 @@
+.price-watch {
+  border: 1px solid #efefef;
+  border-radius: 4px;
+  border-bottom: none;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2); }
+
+.price-watch {
+  padding: 15px;
+  margin: 15px 0; }
+  .price-watch .price-block__price {
+    font-size: 1.8rem;
+    font-weight: 300; }
+  .price-watch .price-block__price-range {
+    color: #777; }
+  .price-watch__flight {
+    font-weight: 300;
+    font-size: 1.5rem; }
+  .price-watch__date {
+    font-weight: 400;
+    font-size: 0.9rem;
+    word-spacing: 0.1rem;
+    color: #aaa; }

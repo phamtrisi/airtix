@@ -1,17 +1,57 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
-      <div ng-if="items.length">
-        <ul class="unstyled">
-          <li ng-repeat="item in items | orderBy:'name'">
-            {{ item.name }} - {{ item.price | currency:USD$:2 }}
-          </li>
-        </ul>
+      <div ng-if="priceWatches.length">
+        <div ng-repeat="priceWatch in priceWatches | orderBy:['from_airport','date']"
+             class="price-watch row">
+          
+          <div class="col-md-3 col-sm-3">
+            <div class="price-watch__header">
+              <p class="price-watch__flight">
+                {{ priceWatch.from_airport }} - {{ priceWatch.to_airport }}
+              </p>
+              <p class="price-watch__date">{{ priceWatch.date| date:'MMM dd, yy'}}</p>
+            </div>
+          </div>
+          <div class="col-md-9 col-sm-9">
+            <div ng-if="priceWatch.lastPriceLog"
+                 class="row">
+              <div class="col-md-4 col-sm-4">
+                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_business_price <= priceWatch.businessPrices.min, 'negative': priceWatch.lastPriceLog.lowest_business_price > priceWatch.businessPrices.min}"
+                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_business_price }}</p>
+                <p ng-if="priceWatch.businessPrices.min !== priceWatch.businessPrices.max"
+                   class="text-centered">
+                  <small class="price-block__price-range">
+                    ${{ priceWatch.businessPrices.min }} to ${{ priceWatch.businessPrices.max }}
+                  </small>
+                </p>
+              </div>
+              <div class="col-md-4 col-sm-4">
+                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_anytime_price <= priceWatch.anytimePrices.min, 'negative': priceWatch.lastPriceLog.lowest_anytime_price > priceWatch.anytimePrices.min}"
+                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_anytime_price }}</p>
+                <p ng-if="priceWatch.anytimePrices.min !== priceWatch.anytimePrices.max"
+                   class="text-centered">
+                  <small class="price-block__price-range">
+                    ${{ priceWatch.anytimePrices.min }} to ${{ priceWatch.anytimePrices.max }}
+                  </small>
+                </p>
+              </div>
+              <div class="col-md-4 col-sm-4">
+                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_get_away_price <= priceWatch.getAwayPrices.min, 'negative': priceWatch.lastPriceLog.lowest_get_away_price > priceWatch.getAwayPrices.min}"
+                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_get_away_price }}</p>
+                <p ng-if="priceWatch.getAwayPrices.min !== priceWatch.getAwayPrices.max"
+                   class="text-centered">
+                  <small class="price-block__price-range">
+                    ${{ priceWatch.getAwayPrices.min }} to ${{ priceWatch.getAwayPrices.max }}
+                  </small>
+                </p>
+              </div>
+            </div>
+            <div class="price-watch__history" ng-if="priceWatch.PriceLogs.length">
+            </div>
+          </div>
+        </div>
       </div>
-
-      <add-item-form></add-item-form>
-
     </div>     
   </div>
-</div>  
-
+</div>
