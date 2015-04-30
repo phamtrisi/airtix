@@ -3,6 +3,6 @@ module.exports = {
     connectionString : 'mysql://root@localhost:3306/airtix'
   },
   prod: {
-    connectionString: 'mysql://b0b18b489e3feb:f187b69f@us-cdbr-iron-east-02.cleardb.net:3306/heroku_fb4dddb774540a6'
+    connectionString: 'mysql://bdd77af6158fd2:ce4fde00@us-cdbr-iron-east-02.cleardb.net:3306/heroku_37c6fa967240ed4'
   }
 }
