@@ -1,13 +1,12 @@
-// modules =================================================
 var express = require('express'),
-    app = express(),
-    bodyParser = require('body-parser'),
-    methodOverride = require('method-override'),
-    Sequelize = require('sequelize'),
-    epilogue = require('epilogue'),
-    CronJob = require('cron').CronJob,
-    models = require('./app/models/models'),
-    SouthwestScraper = require('./app/scraper/Southwest');
+  app = express(),
+  bodyParser = require('body-parser'),
+  methodOverride = require('method-override'),
+  CronJob = require('cron').CronJob,
+  Airbnb = require('./airapi/Airbnb'),
+  _ = require('lodash'),
+  nodemailer = require('nodemailer'),
+  creds = require('./config/creds');
 
 
 // set our port
@@ -41,33 +40,54 @@ app.listen(port);
 
 // shoutout to the user                     
 console.log('App running on port ' + port);
+console.log('Cron jobs starting');
+
+var transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: creds.gmail.username,
+    pass: creds.gmail.password
+  }
+});
 
 // Get transactions every 2 hours
-var updatePrices = new CronJob({
-      cronTime: '0 */10 * * * *',
-      onTick: function() {
-        console.log('Getting price updates');
-        
-        function _toDateString(d) {
-            return [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/');
-        }
-
-        models.PriceWatch.all().then(function(priceWatches) {
-            priceWatches.forEach(function(priceWatch) {
-                SouthwestScraper.getPrices(priceWatch.from_airport, priceWatch.to_airport, _toDateString(priceWatch.date), {
-              priceWatchId: priceWatch.id
-            });
-            });
+var watchHosting = new CronJob({
+  cronTime: '0 */5 * * * *',
+  onTick: function() {
+    Airbnb.availability(277882, {
+      count: 12
+    }, function(err, res, info) {
+      var availableDates = info.calendar_months.map(function(month) {
+        return month.days.filter(function(day) {
+          return day.available;
         });
-        
-      },
-      start: false,
-      timeZone: 'America/Los_Angeles'
+      }).reduce(function(list, cur) {
+        return list.concat(cur);
+      }, []);
+
+      if (availableDates.length > 1) {
+        // email me
+        var mailOptions = {
+          from: 'Si Pham <phamtrisi@gmail.com>', // sender address
+          to: 'phamtrisi@gmail.com', // list of receivers
+          subject: 'Original airbnb listing is available!', // Subject line
+          text: 'The original airbnb listing is available. Go to https://www.airbnb.com/rooms/277882 to check it out!', // plaintext body
+          html: 'The original airbnb listing is available. Go to https://www.airbnb.com/rooms/277882 to check it out!' // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, function(error, info) {
+          if (error) {
+            return console.log(error);
+          }
+          console.log('Message sent: ' + info.response);
+        });
+      }
     });
-
-updatePrices.start();
-console.log('Cron jobs started');
-
+  },
+  start: true,
+  timeZone: 'America/Los_Angeles'
+});
 
 // expose app           
 exports = module.exports = app;

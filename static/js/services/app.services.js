@@ -1,4 +1,4 @@
-(function(angular, _) {
+(function(angular) {
   var services = angular.module('moneyAppServices', []);
 
   services.service('moneyAppPlaid', ['$http', moneyAppPlaid]);
@@ -18,4 +18,4 @@
     };  
   };
 
-})(angular, _);
+})(angular);

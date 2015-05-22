@@ -6,5 +6,9 @@ module.exports = {
   pushover: {
   	'token': 'aunpRBi3Ldn7PnUNur5txn4q7UPmxo',
   	'user_key': 'uDfw3p2Kwoe35oyQeDprq6FEdaDef3'
+  },
+  gmail: {
+    username: 'phamtrisi@gmail.com',
+    password: 'Iasp200489@'
   }
 }

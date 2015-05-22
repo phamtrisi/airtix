@@ -1,2 +1,1 @@
-#airtix
-Southwest prices monitor.
+#MeanAppSkeleton

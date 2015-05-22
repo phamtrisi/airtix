@@ -1,60 +1,28 @@
-<div class="container-fluid">
+<div class="container-fluid home-module">
   <div class="row">
-    <div class="col-md-12">
-      <div ng-if="priceWatches.length">
-        <div ng-repeat="priceWatch in priceWatches | orderBy:['from_airport','date']"
-             class="price-watch row">
-          
-          <div class="col-md-3 col-sm-3">
-            <div class="price-watch__header">
-              <p class="price-watch__flight">
-                {{ priceWatch.from_airport }} - {{ priceWatch.to_airport }}
-              </p>
-              <p class="price-watch__date">{{ priceWatch.date| date:'MMM dd, yy'}}</p>
-            </div>
-          </div>
-          <div class="col-md-9 col-sm-9">
-            <div ng-if="priceWatch.lastPriceLog"
-                 class="row">
-              <div class="col-md-4 col-sm-4">
-                <p class="text-centered"><small>business</small></p>
-                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_business_price <= priceWatch.businessPrices.min, 'negative': priceWatch.lastPriceLog.lowest_business_price > priceWatch.businessPrices.min}"
-                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_business_price }}</p>
-                <p ng-if="priceWatch.businessPrices.min !== priceWatch.businessPrices.max"
-                   class="text-centered">
-                  <small class="price-block__price-range">
-                    ${{ priceWatch.businessPrices.min }} to ${{ priceWatch.businessPrices.max }}
-                  </small>
-                </p>
-              </div>
-              <div class="col-md-4 col-sm-4">
-                <p class="text-centered"><small>anytime</small></p>
-                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_anytime_price <= priceWatch.anytimePrices.min, 'negative': priceWatch.lastPriceLog.lowest_anytime_price > priceWatch.anytimePrices.min}"
-                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_anytime_price }}</p>
-                <p ng-if="priceWatch.anytimePrices.min !== priceWatch.anytimePrices.max"
-                   class="text-centered">
-                  <small class="price-block__price-range">
-                    ${{ priceWatch.anytimePrices.min }} to ${{ priceWatch.anytimePrices.max }}
-                  </small>
-                </p>
-              </div>
-              <div class="col-md-4 col-sm-4">
-                <p class="text-centered"><small>getaway</small></p>
-                <p ng-class="{'positive': priceWatch.lastPriceLog.lowest_get_away_price <= priceWatch.getAwayPrices.min, 'negative': priceWatch.lastPriceLog.lowest_get_away_price > priceWatch.getAwayPrices.min}"
-                   class="text-centered price-block__price">${{ priceWatch.lastPriceLog.lowest_get_away_price }}</p>
-                <p ng-if="priceWatch.getAwayPrices.min !== priceWatch.getAwayPrices.max"
-                   class="text-centered">
-                  <small class="price-block__price-range">
-                    ${{ priceWatch.getAwayPrices.min }} to ${{ priceWatch.getAwayPrices.max }}
-                  </small>
-                </p>
-              </div>
-            </div>
-            <div class="price-watch__history" ng-if="priceWatch.PriceLogs.length">
-            </div>
-          </div>
-        </div>
+    <div class="col-md-8 col-md-offset-2">
+      <form ng-show="!added">
+        <h1 class="title">Wanna stay at the <a target="_blank" href="https://www.airbnb.com/rooms/277882">original airbnb listing</a>?</h1>
+        <p class="pretext">
+          Legends have it that Brian Chesky (airbnb's CEO) randomly selects a few days a year to open up his apartment on airbnb. If you would like to be among the lucky few, leave your email here, and I'll notify you when the opportunity comes. <br/>
+          <strong>{{ subscribers.length }}</strong> people have signed up. 
+        </p>
+        <input type="email" 
+               required
+               name="email" 
+               class="email-input" 
+               placeholder="Your email" 
+               ng-model="email">
+        <button class="submit" 
+                ng-click="subscribe(email)">
+          Notify me when it's available
+        </button>
+      </form>
+      <div ng-if="added">
+        <h1 class="title">Thanks, we got your email! Good luck!</h1>
+        <p><strong>{{ subscribers.length }}</strong> people have signed up.</p>
       </div>
+      
     </div>     
   </div>
 </div>
